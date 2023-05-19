@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app=express();
 const port=process.env.PORT || 3000;
 
@@ -32,14 +32,57 @@ async function run() {
     const cursor=toysCollection.find();
      const result=await cursor.toArray();
      res.send(result)
+   });
+
+   app.get('/mytoys', async(req,res)=>{
+   console.log(req.query);
+    let query={}
+    if(req.query?.email){
+     query={email:req.query.email}
+    }
+    const cursor=toysCollection.find(query);
+    const result=await cursor.toArray();
+    res.send(result)
+   });
+
+   app.get('/mytoys/:id', async(req,res)=>{
+    const id=req.params.id;
+    const query={_id: new ObjectId(id)};
+    const result= await toysCollection.findOne(query);
+    res.send(result);
    })
+
+   app.put('/mytoys/:id',async(req,res)=>{
+    const id =req.params.id;
+
+    const filter={_id:new ObjectId(id)};
+    const option={upsert:true};
+    const toyInfo=req.body;
+    console.log(toyInfo)
+    const updatedInfo={
+     $set:{
+      price:toyInfo.price,
+       quantity:toyInfo.quantity.price,
+       details:toyInfo.details,
+     }
+    }
+    const result=await toysCollection.updateOne(filter,updatedInfo,option,);
+    res.send(result)
+   })
+
+app.delete('/mytoys/:id', async(req,res)=>{
+ const id=req.params.id;
+ const query={_id: new ObjectId(id)};
+ const result=await toysCollection.deleteOne(query);
+ res.send(result)
+})
 
     app.post('/alltoys',async(req,res)=>{
      const toy=req.body
      const result=await toysCollection.insertOne(toy);
      res.send(result)
      console.log(toy)
-    })
+    });
 
     
     // Send a ping to confirm a successful connection
