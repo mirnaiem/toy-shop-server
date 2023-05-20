@@ -62,7 +62,11 @@ const limit=20
     res.send(result);
    })
 
-   
+   app.get('/search',async(req,res)=>{
+    const query = { name: req.query.name}
+    const result=await toysCollection.find(query).toArray()
+    res.send(result)
+   })
    app.put('/mytoys/:id',async(req,res)=>{
     const id =req.params.id;
 
