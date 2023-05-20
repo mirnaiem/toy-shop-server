@@ -24,12 +24,12 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const toysCollection=client.db('toysDB').collection('toys')
-
+const limit=20
    app.get('/alltoys',async(req,res)=>{
-    const cursor=toysCollection.find();
+    const cursor=toysCollection.find().limit(limit);
      const result=await cursor.toArray();
      res.send(result)
    });
@@ -73,7 +73,7 @@ async function run() {
     const updatedInfo={
      $set:{
       price:toyInfo.price,
-       quantity:toyInfo.quantity.price,
+       quantity:toyInfo.quantity,
        details:toyInfo.details,
      }
     }
