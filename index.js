@@ -29,7 +29,8 @@ async function run() {
     const toysCollection=client.db('toysDB').collection('toys')
 const limit=20
    app.get('/alltoys',async(req,res)=>{
-    const cursor=toysCollection.find().limit(limit);
+    const sort=req?.query?.sort === 'true' ? 1:-1;
+    const cursor=toysCollection.find().sort({ price: sort }).limit(limit);
      const result=await cursor.toArray();
      res.send(result)
    });
